@@ -1,0 +1,18 @@
+name: 'test build'
+on:
+  workflow_dispatch:
+
+jobs:
+   build-mysql:
+    name: 'Build MySQL'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ploosh_mysql
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Install requirements
+      run: | 
+        docker build -t ploosh_mysql .
