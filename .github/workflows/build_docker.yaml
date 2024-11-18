@@ -15,4 +15,9 @@ jobs:
       uses: actions/checkout@v3
     - name: Install requirements
       run: | 
-        docker build -t ploosh_mysql .
+        docker build -t my-ploosh_mysql \
+        --build-arg MYSQL_ROOT_PASSWORD=miaou \
+        --build-arg MYSQL_PASSWORD=miaou \
+        --build-arg MYSQL_DATABASE=ploosh \
+        --build-arg MYSQL_USER=ploosh \
+        .
