@@ -3,21 +3,33 @@ on:
   workflow_dispatch:
 
 jobs:
-   build-mysql:
-    name: 'Build MySQL'
+  tests:
+    name: 'Tests'
     runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
-        working-directory: ploosh_mysql
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+
     - name: Install requirements
       run: | 
-        docker build -t ploosh_mysql \
-        --build-arg MYSQL_ROOT_PASSWORD=miaou \
-        --build-arg MYSQL_PASSWORD=miaou \
-        --build-arg MYSQL_DATABASE=ploosh \
-        --build-arg MYSQL_USER=ploosh \
-        .
+         sudo apt-get install -y postgresql-client
+
+    - name: Build & run MySQL
+      run: | 
+        docker run --name ploosh_mysql \
+          -e MYSQL_ROOT_PASSWORD=ploosh \
+          -e MYSQL_PASSWORD=ploosh \
+          -e MYSQL_DATABASE=ploosh \
+          -e MYSQL_USER=ploosh \
+          -p 3306:3306 \
+          -d mysql
+
+    - name: Feed databases
+      run: | 
+        mysql -h 127.0.0.1 -u ploosh -pploosh < tests/env/mysql/setup.sql
+
+        export PGPASSWORD='ploosh';
+        psql -h 127.0.0.1 -U ploosh -d ploosh -f tests/env/postgresql/setup.sql
