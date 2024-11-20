@@ -17,7 +17,7 @@ jobs:
       run: | 
          sudo apt-get install -y postgresql-client
 
-    - name: Build & run MySQL
+    - name: Run MySQL container
       run: | 
         docker run --name ploosh_mysql \
           -e MYSQL_ROOT_PASSWORD=ploosh \
@@ -26,9 +26,19 @@ jobs:
           -e MYSQL_USER=ploosh \
           -p 3306:3306 \
           -d mysql
-
+    - name: Run PostgreSQL container
+      run: | 
+        docker run --name ploosh_postgresql \
+          -e POSTGRES_USER=ploosh \
+          -e POSTGRES_PASSWORD=ploosh \
+          -e POSTGRES_DB=ploosh \
+          -p 5432:5432 \
+          -d postgres
+    
     - name: Feed databases
       run: | 
+        sleep 30 # wait until all services are up
+
         mysql -h 127.0.0.1 -u ploosh -pploosh < tests/env/mysql/setup.sql
 
         export PGPASSWORD='ploosh';
