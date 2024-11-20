@@ -1,20 +1,26 @@
-CREATE DATABASE ploosh;
+IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'ploosh')
+BEGIN
+    CREATE DATABASE ploosh;
+END;
+GO
 
-\c ploosh;
+USE ploosh;
+GO
 
-CREATE TABLE IF NOT EXISTS sales (
-    sale_id SERIAL PRIMARY KEY,
-    seller_name VARCHAR(100) NOT NULL,
-    card_name VARCHAR(100) NOT NULL,
-    card_rarity VARCHAR(50),
-    card_condition VARCHAR(50),
+CREATE TABLE sales (
+    sale_id INT IDENTITY(1,1) PRIMARY KEY,
+    seller_name NVARCHAR(100) NOT NULL,
+    card_name NVARCHAR(100) NOT NULL,
+    card_rarity NVARCHAR(50),
+    card_condition NVARCHAR(50),
     price DECIMAL(10, 2) NOT NULL,
     quantity INT,
     sale_date DATE,
-    card_set VARCHAR(100),
-    buyer_name VARCHAR(100),
-    transaction_status VARCHAR(50)
+    card_set NVARCHAR(100),
+    buyer_name NVARCHAR(100),
+    transaction_status NVARCHAR(50)
 );
+GO
 
 INSERT INTO sales (seller_name, card_name, card_rarity, card_condition, price, quantity, sale_date, card_set, buyer_name, transaction_status)
 VALUES
@@ -92,12 +98,13 @@ VALUES
 ('Mason Martinez', 'Tauros', 'Common', 'Near Mint', 10.00, 10, '2025-01-12', 'Jungle', 'Alex Johnson', 'Completed'),
 ('Evelyn Walker', 'Exeggutor', 'Rare', 'Mint', 65.00, 1, '2025-01-13', 'Jungle', 'Sarah White', 'Completed'),
 ('Lucas Harris', 'Venonat', 'Common', 'Excellent', 5.00, 15, '2025-01-14', 'Jungle', 'Harper Lewis', 'Pending');
+GO
 
 CREATE VIEW sales_by_seller AS
-    SELECT 
-        seller_name,
-        SUM(price) AS total_sales
-    FROM sales 
-        WHERE transaction_status = 'Completed' 
-    GROUP BY seller_name 
-    ORDER BY total_sales DESC;
+SELECT 
+    seller_name,
+    SUM(price) AS total_sales
+FROM sales 
+WHERE transaction_status = 'Completed'
+GROUP BY seller_name;
+GO
